@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://xmlns.jcp.org/xml/ns/javaee" xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_3_1.xsd" id="WebApp_ID" version="3.1">
+  <display-name>cinema_ssm</display-name>
+  <welcome-file-list>
+  	<welcome-file></welcome-file>
+  </welcome-file-list>
+  
+  <!-- 如何将常用数据(如热门的电影数据)放进servletContext中以供用户频繁调用的试想：
+  	由于很难在web.xml中直接给servletContext设置这些常用数据(对象几乎无法在web.xml中直接放进servletContext)，
+  因此考虑使用标志变量的方法：设置一个标志变量callHotPot，并初始为0；当第一个用户调用到常用数据时，从数据库查询出
+  来后放进servletContext中并将callHotPot赋值为1。后续甚至可以建立简单的常用数据缓存机制 -->
+  
+  	<!-- 注册ContextLoaderListener：以创建ac单例 -->
+	<context-param>
+		<param-name>contextConfigLocation</param-name>
+		<param-value>classpath:source/spring-*.xml</param-value>
+	</context-param>
+
+	<listener>
+		<listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+	</listener>
+  
+  <!-- 注册中央调度器 -->
+  <servlet>
+  	<servlet-name>onlyServlet</servlet-name>
+  	<servlet-class>org.springframework.web.servlet.onlyServlet</servlet-class>
+  	<init-param>
+  		<param-name>ContextConfigLocation</param-name>
+		<param-value>spring-mvc.xml</param-value>
+  	</init-param>
+  </servlet>
+  
+  <servlet-mapping>
+  	<servlet-name>onlyServlet</servlet-name>
+  	<url-pattern>*.*.do</url-pattern>
+  </servlet-mapping>
+  
+  <!-- 注册请求响应字符集过滤器 -->
+  <filter>
+  	<filter-name>characterEncodingFilter</filter-name>
+  	<filter-class>org.springframework.web.filter.CharacterEncodingFilter</filter-class>
+  	<init-param>
+  		<param-name>encoding</param-name>
+  		<param-value>utf-8</param-value>
+  	</init-param>
+  	<init-param>
+  		<param-name>forceRequestEncoding</param-name>
+  		<param-value>true</param-value>
+  	</init-param>
+  	<init-param>
+  		<param-name>forceResponseEncoding</param-name>
+  		<param-value>true</param-value>
+  	</init-param>
+  </filter>
+  
+  <filter-mapping>
+  		<filter-name>characterEncodingFilter</filter-name>
+  		<url-pattern>*.*.do</url-pattern>
+  </filter-mapping>
+  
+  <!-- 配置jstl -->
+  <jsp-config>
+  	<taglib>
+  		<taglib-uri>http://java.sun.com/jstl/core</taglib-uri>
+  		<taglib-location>/WEB-INF/c.tld</taglib-location>
+  	</taglib>
+  	<taglib>
+  		<taglib-uri>http://java.sun.com/jstl/fmt-rt</taglib-uri>
+  		<taglib-location>/WEB-INF/c-rt.tld</taglib-location>
+  	</taglib>
+  	<taglib>
+  		<taglib-uri>http://java.sun.com/jstl/fmt</taglib-uri>
+  		<taglib-location>/WEB-INF/fmt.tld</taglib-location>
+  	</taglib>
+  	<taglib>
+  		<taglib-uri>http://java.sun.com/jstl/fmt-rt</taglib-uri>
+  		<taglib-location>/WEB-INF/fmt-rt.tld</taglib-location>
+  	</taglib>
+  	<taglib>
+  		<taglib-uri>http://java.sun.com/jstl/fn</taglib-uri>
+  		<taglib-location>/WEB-INF/fn.tld</taglib-location>
+  	</taglib>
+  	<taglib>
+  		<taglib-uri>http://java.sun.com/jstl/fn-rt</taglib-uri>
+  		<taglib-location>/WEB-INF/fn-rt.tld</taglib-location>
+  	</taglib>
+  </jsp-config>
+</web-app>
