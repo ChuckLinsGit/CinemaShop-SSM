@@ -1,0 +1,276 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper>
+	<select id="getCinemas" parameterType="map">
+		SELECT * FROM cinemainagreement
+		WHERE
+		cinemaLocationCity=#{city}
+		<if test="${town}!=NULL">
+			AND cinemaLocationTown=#{town}
+		</if>
+	</select>
+	
+	<select id="getMoivesInCinemaOnProject">
+		SELECT * FROM cinema_movies
+		WHERE isOverDue=0;
+	</select>
+	
+	<insert id="addCatalog">
+		INSERT INTO moviecatalog
+		(catalogName,catalogDetail)
+		VALUES
+		(#{catalogName},#{catalogDetail})
+	</insert>
+
+	<update id="modifyCatalog">
+		UPDATE moviecatalog
+		SET
+		(catalogNumb=#{catalogNumb},catalogName=#{catalogName}
+		)
+		WHERE
+		catalogDetail=#{catalogDetail}
+	</update>
+	
+	<delete id="deleteCatalog">
+		DELETE FORM moviecatalog
+		WHERE catalogDetail=#{catalogDetail}
+	</delete>
+	
+	<select id="getCatalogs" resultType="systemModule.entity.Catalog">
+		SELECT * FROM moviecatalog
+	</select>
+	
+	<select id="getCatalogByName" resultType="systemModule.entity.Catalog">
+		SELECT * FROM moviecatalog
+		WHERE catalogName=#{catalogName}
+	</select>
+
+	<insert id="addMovie" parameterType="systemModule.entity.Movie">
+		INSERT INTO moviebase
+		(movieName, movieCatalogNumb, movieDirector,
+		movieChiefActors,movieProjectDate,chiefInstruction)
+		VALUES
+		(#{movie.movieName},#{movie.movieCatalogNumb},#{movie.movieDirector},
+		 #{movie.movieChiefActors},#{movie.movieProjectDate},#{movie.chiefInstruction})
+	</insert>
+	
+	<update id="modifyMovie" parameterType="systemModule.entity.Movie">
+		UPDATE moviebase
+		SET
+		(movieName=#{movie.movieName},movieCatalogNumb=#{movie.movieCatalogNumb},
+		 movieDirector=#{movie.movieDirector},chiefInstruction=#{movie.chiefInstruction}
+		 movieChiefActors=#{movie.movieChiefActors},movieProjectDate=#{movie.movieProjectDate})
+		 WHERE
+		 movieNumb=#{movie.movieNumb}
+	</update>
+	
+	<delete id="deleteMovie">
+		DELETE FROM moviebase
+		movieNumb=#{movie.movieNumb}
+	</delete>
+	
+	 <select id="getMovieByName" resultType="systemModule.entity.Movie">
+	 	SELECT * FROM moviebase
+	 	WHERE movieName=#{movie.movieName}
+	 </select>
+	 
+	 <select id="getMovieByNumb" resultType="systemModule.entity.Movie">
+	 	SELECT * FROM moviebase
+	 	WHERE movieNumb=#{movie.movieNumb}
+	 </select>
+	 
+	 <select id="getMovieInCatalog" resultType="systemModule.entity.Movie">
+	 	SELECT * FROM moviebase
+	 	WHERE movieCatalogNumb=#{movie.movieCatalogNumb}
+	 </select>
+	 
+	 <insert id="addCarousal">
+	 	INSERT INTO carousalmovie
+	 	VALUES(1,#{movieNumb})
+	 </insert>
+	 
+	 <update id="cancalCarousal">
+	 	UPDATE carousalmovie
+	 	SET inCarousal=0
+	 	WHERE movieNumb=#{movieNumb}
+	 </update>
+	 
+	 <delete id="removeCarousal">
+	 	DELETE carousalmovie
+	 	WHERE movieNumb=#{movieNumb}
+	 </delete>
+	 
+	 <select id="getCarousal" resultType="systemModule.entity.Carousal">
+	 	SELECT * FROM carousalmovie
+	 </select>
+	 
+	 <select id="getBeCarousal" resultType="systemModule.entity.Carousal">
+	 	SELECT * FROM carousalmovie
+	 	WHERE inCarousal=1
+	 </select>
+	 
+	 <select id="ifExists" resultType="String">
+	 	SELECT roleName FROM syssupermanager
+	 	WHERE managerNumb=#{managerNumb}
+	 </select>
+	 
+	 <select id="checkPassword" resultType="String">
+	 	SELECT roleName FROM syssupermanager
+	 	WHERE 
+	 	managerNumb=#{managerNumb} AND password=#{password]}
+	 </select>
+	 
+	 <insert id="addRole" parameterType="systemModule.entity.Role">
+	 	INSERT INTO sysroleset
+	 	(roleName) VALUES(#{newRole.roleName})
+	 </insert>
+	 
+	 <update id="modifyRole" parameterType="systemModule.entity.Role">
+	 	UPDATE sysroleset
+	 	SET roleName=#{newRole.roleName}
+	 	WHERE roleNumb=#{newRole.roleNumb}
+	 </update>
+	 
+	 <delete id="deleteRole" >
+	 	DELETE FROM sysroleset
+	 	WHERE roleNumb=#{newRole.roleNumb}
+	 </delete>
+	 
+	 <select id="getRoles" resultType="systemModule.entity.Role">
+	 	SELECT * FROM sysroleset
+	 </select>
+	 
+	 <insert id="addAuthority" parameterType="String">
+	 	INSERT INTO authorties 
+	 	(authorityDetail) VALUES #{newAuthority}
+	 </insert>
+	 
+	 <update id="modifyAuthority" parameterType="systemModule.entity.Role">
+	 	UPDATE authorties
+	 	SET authorityDetail=#{authority.authorityDetail}
+	 	WHERE
+	 	authorityNumb=#{authorityNumb}
+	 </update>
+	 
+	 <delete id="deleteAuthority">
+	 	DELETE FROM authorties
+	 	WHERE authorityNumb=#{authorityNumb}
+	 </delete>
+	 
+	 <select id="getAuthorities" resultType="systemModule.entity.Authority">
+	 	SELECT * FROM authorties
+	 </select>
+	 
+	 <insert id="grant">
+	 	INSERT INTO roleauthority
+	 	(roleNumb,authorityNumb) VALUES (#{roleNumb},#{authorityNumb})
+	 </insert>
+	 
+	 <delete id="revoke">
+	 	DELETE FROM roleauthority
+	 	WHERE 
+	 	roleNumb=#{roleNumb} AND authorityNumb=#{authorityNumb}
+	 </delete>
+	 
+	 <insert id="addCinameApply" parameterType="systemModule.entity.ApplyCinema">
+	 	INSERT INTO cinemaapply
+	 	(cinemaName,cinemaLocationCity,cinemaLocationTown,detail,applyDate)
+	 	VALUES
+	 	(#{apply.cinemaName},#{apply.cinemaLocationCity},#{apply.cinemaLocationTown},
+	 	#{apply.detail},#{apply.applyDate})
+	 </insert>
+	 
+	 <update id="modifyCinemaApply" parameterType="systemModule.entity.ApplyCinema">
+	    UPDATE cinemaapply 
+	    SET (cinemaName=#{apply.cinemaName},cinemaLocationCity=#{apply.cinemaLocationCity},
+	    	cinemaLocationTown=#{apply.cinemaLocationTown},detail=#{apply.detail},applyDate=#{apply.applyDate})
+	    WHERE cinemaApplyNumb=#{apply.cinemaApplyNumb}
+	 </update>
+	 
+	  <delete id="deleteCinemaApply">
+	  	DELETE FROM cinemaapply
+	  	WHERE cinemaApplyNumb=#{cinemaApplyNumb}
+	  </delete>
+	  
+	  <select id="getCinemasApply" resultType="systemModule.entity.ApplyCinema">
+	  	SELECT * FROM cinemaapply
+	  </select>
+	  
+	   <insert id="addCManagerApoly" parameterType="systemModule.entity.ApplyCinemaManager">
+	   	INSERT INTO cinemamanagerapply
+	   	(managerName,managerIDcard,cinemaPhoneNumb,cinemaApplyNumb)
+	   	VALUES
+	   	(#{apply.managerName},#{apply.managerIDcard},#{apply.cinemaPhoneNumb},#{apply.cinemaApplyNumb})
+	   </insert>
+	   
+	   <update id="modigyCManagerApply" parameterType="systemModule.entity.ApplyCinemaManager">
+	   	UPDATE cinemamanagerapply
+	   	SET(managerName=#{apply.managerName},managerIDcard=#{apply.managerIDcard},
+	   	cinemaPhoneNumb=#{apply.cinemaPhoneNumb},cinemaApplyNumb=#{apply.cinemaApplyNumb})
+	   	WHERE managerApplyNumb=#{apply.managerApplyNumb}
+	   </update>
+	   
+	   <delete id="deleteCManagerApply">
+	   	DELETE FROM cinemamanagerapply
+	   	WHERE managerApplyNumb=#{managerApplyNumb}
+	   </delete>
+	   
+	   <select id="getCinemaManagersApply" resultType="systemModule.entity.ApplyCinemaManager">
+	   	SELECT * FROM cinemamanagerapply
+	   </select>
+	   
+	   <select id="getCinemaManagerApply" resultType="systemModule.entity.ApplyCinemaManager">
+	   	SELECT * FROM cinemamanagerapply
+	   	WHERE cinemaApplyNumb=#{cinemaApplyNumb}
+	   </select>
+	   
+	   <update id="setCinemaInagree">
+	   	UPDATE cinemaapply 
+	    SET isAccepted=#{apply.isAccepted}
+	    WHERE cinemaApplyNumb=#{cinemaApplyNumb}
+	    SELECT @@Identify
+	   </update>
+	   
+	   <insert id="addCinemaInagree" parameterType="systemModule.entity.ApplyCinema">
+	   	INSERT INTO cinemainagreement
+	 	(cinemaName,cinemaLocationCity,cinemaLocationTown,detail,applyDate,durationBegin,durationEnd)
+	 	VALUES
+	 	(#{applyCinema.cinemaName},#{applyCinema.cinemaLocationCity},#{applyCinema.cinemaLocationTown},
+	 	#{applyCinema.detail},#{applyCinema.applyDate},#{applyCinema.durationBegin},#{applyCinema.durationEnd})
+	   </insert>
+	   
+	   <insert id="addCinemaManagerInagree" parameterType="systemModule.entity.ApplyCinemaManager">
+	   	INSERT INTO cinemamanagerinagreement
+	   	(managerName,managerIDcard,cinemaPhoneNumb,cinemaNumb,roleNumb)
+	   	VALUES
+	   	(#{applyCinemaManager.managerName},#{applyCinemaManager.managerIDcard},
+	   		#{applyCinemaManager.cinemaPhoneNumb},#{applyCinemaManager.cinemaNumb},
+	   		#{applyCinemaManager.roleNumb})
+	   </insert>
+	   
+	   <update id="modigyCinemaInagree" parameterType="systemModule.entity.Cinema">
+	   	UPDATE cinemainagreement 
+	    SET (cinemaName=#{inAgree.cinemaName},cinemaLocationCity=#{inAgree.cinemaLocationCity},
+	    		cinemaLocationTown=#{inAgree.cinemaLocationTown},detail=#{inAgree.detail},applyDate=#{inAgree.applyDate}
+	    		durationBegin=#{inAgree.durationBegin},durationEnd=#{inAgree.durationBegin})
+	    WHERE cinemaNumb=#{inAgree.cinemaNumb}
+	   </update>
+	   
+	   <update id="modifyManagerInagree" parameterType="systemModule.entity.Manager">
+	   	UPDATE cinemamanagerinagreement
+	   	SET(managerName=#{inAgree.managerName},managerIDcard=#{inAgree.managerIDcard},
+	   	cinemaPhoneNumb=#{inAgree.cinemaPhoneNumb},cinemaNumb=#{inAgree.cinemaNumb},roleNumb=#{inAgree.roleNumb})
+	   	WHERE managerApplyNumb=#{inAgree.managerApplyNumb}
+	   </update>
+	   
+	   <delete id="deleteCinemaInagree">
+	   	DELETE FROM cinemainagreement
+	   	WHERE cinemaNumb=#{cinemaNumb}
+	   </delete>
+	   
+	   <delete id="deleteCinemaManager">
+	   	DELETE FROM cinemamanagerinagreement
+	   	WHERE cinemaNumb=#{cinemaNumb}
+	   </delete>
+</mapper>

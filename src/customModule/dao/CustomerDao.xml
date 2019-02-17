@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper>
+	<select id="getCustomerByPhone" resultType="Customer">
+		SELECT *FROM custominformation 
+		WHERE customPhone=#{customPhone} 
+	</select>
+	
+	<select id="getCustomerByName" resultType="Customer">
+		SELECT *FROM custominformation 
+		WHERE customPhone=#{customName} 
+	</select>
+	
+	<select id="getCustomerByMail" resultType="Customer">
+		SELECT *FROM custominformation 
+		WHERE customPhone=#{customMail} 
+	</select>
+	
+	<select id="getCustomer" resultType="map">
+		SELECT *FROM custominformation 
+		WHERE ${way}=#{value} 
+	</select>
+
+	<insert id="addCustomer">
+		INSERT INTO custominformation(customName,customPhone,customMail,password)
+		VALUES (#{customName},#{customPhone},#{customMail},#{password})
+	</insert>
+	
+	<update id="modifyCustomer">
+		UPDATE custominformation 
+		SET customName=#{customName},customPhone=#{customPhone},
+			customMail=#{customMail},password=#{password}
+		WHERE customNumb=#{customNumb}
+	</update>
+	
+	<insert id="addWannasee">
+		INSERT INTO personal_wannasee(customNumb,movieId)
+		VALUES (#{customNumb},#{movieId})
+	</insert>
+	
+	<select id="getWannaseeMovieId" resultType="int">
+		SELECT movieId FROM personal_wannasee
+		WHERE customNumb=#{customNumb}
+	</select>
+	
+	<select id="getMovieByname" resultType="String">
+		SELECT movieName FROM moviebase
+		WHERE movieId IN
+		<if test="list.size>0">
+			<foreach collection="list" item="id" open="(" close=")" separator=",">
+				#{id}
+			</foreach>
+		</if>
+	</select>
+	
+	<update id="deleteWannasee">
+		DELETE FROM personal_wannasee
+		WHERE customNumb=#{customNumb},movieId=#{movieId}
+	</update>
+	
+	<insert id="addMovieComm">
+		INSERT INTO moviecomments(movieId,customNumb,commentContent)
+		VALUES(#{movieId},#{customNumb},#{commentContent})
+	</insert>
+	
+	<select id="getMovieComm" resultType="String">
+		SELECT commentContent FROM moviecomments
+		WHERE movieId=#{movieId}
+	</select>
+	
+	<select id="getMovieCommBycustomNumb" resultType="String">
+		SELECT commentContent FROM moviecomments
+		WHERE customNumb=#{customNumb}
+	</select>
+	
+	<update id="modifyMovieComm">
+		UPDATE moviecomments 
+		SET commentContent=#{commentContent}
+		WHERE commentNumb=#{commentNumb}
+	</update>
+	
+	<insert id="deleteMovieComm">
+		DELETE FROM moviecomments
+		WHERE commentNumb=#{commentNumb}
+	</insert>
+</mapper>

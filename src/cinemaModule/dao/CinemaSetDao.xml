@@ -1,0 +1,229 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper>
+	<insert id="addProjectRoomTypes">
+		INSERT INTO projectroomtype
+		(typeAlias,typeInstruction)
+		VALUES
+		(#{alias},#{instroduce})
+	</insert>
+	
+	<update id="modifyProjRoomTypes">
+		UPDATE projectroomtype
+		SET 
+		typeAlias=#{alias},typeInstruction=#{instroduce}
+		WHERE
+		typeNmub=#{typeNumb}
+	</update>
+	
+	<delete id="deleteProjRoomTypes">
+		DELETE FROM projectroomtype
+		WHERE typeNmub=#{typeNumb}
+	</delete>
+	
+	<insert id="addType">
+		INSERT INTO projectroomtype
+		SET roomAmount=#{roomAmount},seatAmount=#{seatAmount}
+		WHERE typeNmub=#{typeNumb}
+	</insert>
+	
+	<insert id="addSetIn1">
+		INSERT INTO seatset1
+		VALUES
+		(#{typeNumb}),
+			<foreach collection="list" separator="," item="seat">
+				#{seat}
+			</foreach>
+		)
+	</insert>
+	
+	 <insert id="addSetIn2">
+	 	INSERT INTO seatset2
+		VALUES
+		(#{typeNumb}),
+			<foreach collection="list" separator="," item="seat">
+				#{seat}
+			</foreach>
+		)
+	 </insert>
+	 
+	 <update id="modifyType">
+	 	UPDATE projectroomtype
+		SET roomAmount=#{roomAmount},seatAmount=#{seatAmount}
+		WHERE typeNmub=#{typeNumb}
+	 </update>
+	 
+	 <update id="deleteSetIn1">
+		DELETE FROM seatset1
+		WHERE typeNumb=#{typeNumb}
+	 </update>
+	 
+	 <update id="deleteSetIn2">
+		DELETE FROM seatset2
+		WHERE typeNumb=#{typeNumb}
+	 </update>
+	 
+	 <select id="getTypeSeatSet1" resultType="cinemaModule.entity.SeatSet1">
+	 	SELECT * FROM seatSet1
+	 	WHERE typeNumb=#{typeNumb}
+	 </select>
+	 <select id="getTypeSeatSet2" resultType="cinemaModule.entity.SeatSet2">
+	 	SELECT * FROM seatSet2
+	 	WHERE typeNumb=#{typeNumb}
+	 </select>
+	 
+	 <insert id="addRoom">
+	 	INSERT INTO projectroom_count
+	 	(typeNumb) VALUES (#{typeNumb})
+	 </insert>
+	 
+	 <sql id="creatRoomSeatset1">
+	 	CREATE TABLE room${roomNumb}Seatset1
+	 	LIKE seatset1 ;
+	 	ALTER TALBLE room${roomNumb}Seatset1
+	 	ADD scheduleNumb INT(10); 
+	 	ALTER TALBLE room${roomNumb}Seatset1
+	 	DROP COLUMN typeNumb; 
+	 	CREATE TALBLE room${roomNumb}Schedule(
+	 		scheduleNumb INT(10) AUTO_INCRIMENT PRIMARY KEY ,
+	 		movieID INT(10) NOT NULL ,
+	 		startDate DATE NOT NULL ,
+	 		startHour INT(2) NOT NULL ,
+	 		startMin INT(2) NOT NULL ,
+	 		endDate DATE NOT NULL ,
+	 		endHour INT(2) NOT NULL ,
+	 		endMin INT(2) NOT NULL ,
+	 		beOrder INT(3) NOT NULL DEFAULT 0,
+	 		isFilled SMALLINT(1) NOT NULL DEFAULT 0
+	 	);
+	 </sql>
+	 
+	 <sql id="creatRoomSeatset2">
+	 	CREATE TABLE room${roomNumb}Seatset1
+	 	LIKE seatset2;
+	 	ALTER TALBLE room${roomNumb}Seatset1
+	 	ADD scheduleNumb INT(10); 
+	 	ALTER TALBLE room${roomNumb}Seatset1
+	 	DROP COLUMN typeNumb; 
+	 </sql>
+
+	 <update id="modifyRoom">
+	 	UPDATE projectroom_count
+	 	SET
+	 	roomName=#{roomName},instruction=#{roomName}
+	 	WHERE roomNumb=#{roomNumb}
+	 </update>
+	 
+	 <select id="getProjectRoomTypes" resultType="projectRoomType">
+	 	SELECT * FROM projectroomtype
+	 	WHERE typeNumb=#{typeNumb}
+	 </select>
+	 
+	 <select id="getRoomInType">
+	 	SELECT roomNumb FROM projectroom_count
+	 	WHERE typeNumb=#{typeNumb}
+	 </select>
+	 
+	 <delete id="deleteRooms">
+	 	DELETE FROM projectroom_count
+	 	WHERE typeNumb=#{typeNumb}
+	 </delete>
+	 
+	 <delete id="deleteRoom">
+	 	DELETE FROM projectroom_count
+	 	WHERE roomNumb=#{roomNumb}
+	 </delete>
+	 
+	 <delete id="deleteRoomSeatset1" parameterType="map">
+	 	DROP TABLE room${roomNumb}Seatset1;
+	 	DROP TALBLE room${roomNumb}Schedule;
+	 </delete>
+	 
+	 <delete id="deleteRoomSeatset2" parameterType="map">
+	 	DROP TABLE room${roomNumb}Seatset2
+	 </delete>
+	 
+	 <select id="getProjectRoom" resultType="ProjectRoom">
+	 	SELECT * FROM  projectroom_count
+	 	WHERE roomNumb=#{roomNumb}
+	 </select>
+	 
+	 <select id="getProjectRooms" resultType="ProjectRoom">
+	 	SELECT * FROM projectroom_count
+	 	WHERE typeNumb=#{typeNumb}
+	 </select>
+	 
+	 <insert id="addSchedule" parameterType="map">
+	 	INSERT INTO room${roomNumb}Schedule
+	 	(movieId,startDate,startHour
+	 	 	startMin,endDate,endHour,endMin)
+	 	 VALUES
+	 	(#{movieId},#{startDate},#{startHour}
+	 		#{startMin},#{endDate},#{endHour},#{endMin});
+	 	SELECT @@scheduleNumb;
+	 </insert>
+	 
+	 <insert id="initSeatSet1">
+	 	INSERT INTO room${roomNumb}Seatset1
+	 	VALUES(
+	 	#{scheduleNumb},
+	 	<foreach collection="list" separator="," item="seat">
+	 		#{seat}
+	 	</foreach>
+	 	)
+	 </insert>
+	 
+	 <insert id="initSeatSet2">
+	 	INSERT INTO room${roomNumb}Seatset2
+	 	VALUES(
+	 	#{scheduleNumb},
+	 	<foreach collection="list" separator="," item="seat">
+	 		#{seat}
+	 	</foreach>
+	 	)
+	 </insert>
+	 
+	 <update id="updateSchedule" parameterType="map">
+	 	UPDATE room${roomNumb}Schedule
+	 	SET(${movieId}=#{movieId},${startDate}=#{startDate},
+	 		${startHour}=#{startHour}${startMin}=#{startMin},${endDate}=#{endDate},
+	 		${endHour}=#{endHour},${endMin}=#{endMin})
+	 </update>
+	 
+	 <delete id="deleteSchedule">
+	 	DELETE FROM room${roomNumb}Schedule,room${roomNumb}Seatset1,room${roomNumb}Seatset2
+	 	WHERE 
+	 	scheduleNumb=#{scheduleNumb}
+	 </delete>
+	 
+	 <!-- 获取放映时间段TimeInterval对象 -->
+	 <select id="getSchedule" resultMap="TimeInterval">
+	 	SELECT * FROM room${roomNumb}Schedule
+	 	WHERE ${way}=#{value}
+	 </select>
+	 <resultMap type="cinemaModule.entity.TimeInterval" id="TimeInterval">
+	 	<id column="scheduleNumb" property="scheduleNumb"/>
+		<result column="roomNumb" property="roomNumb"/>
+		<result column="movieID" property="movieID"/>
+		<result column="startDate" property="startDate"/>
+		<result column="startHour" property="startHour"/>
+		<result column="startMin" property="startMin"/>
+		<result column="endHour" property="endHour"/>
+		<result column="endDate" property="endDate"/>
+		<result column="endMin" property="endMin"/>
+		<result column="beOrder" property="beOrder"/>
+		<collection property="seatSet1" select="getSeatSet1" 
+					ofType="cinemaModule.entity.SeatSet1" column="roomNumb,scheduleNumb"/>
+		<collection property="seatSet2" select="getSeatSet2" 
+					ofType="cinemaModule.entity.SeatSet2" column="roomNumb,scheduleNumb"/>
+	 </resultMap>
+	<select id="seatSet1" resultType="cinemaModule.entity.SeatSet1">
+		SELECT FROM room${roomNumb}Seatset1
+		WHERE scheduleNumb=#{scheduleNumb}
+	</select>
+	<select id="seatSet2" resultType="cinemaModule.entity.SeatSet2">
+		SELECT FROM room${roomNumb}Seatset2
+		WHERE scheduleNumb=#{scheduleNumb}
+	</select>
+</mapper>

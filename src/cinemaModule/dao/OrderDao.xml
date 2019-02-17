@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper>
+	<select id="getTicketPrice" parameterType="map">
+		SELECT ticketPrice FROM cinema_movies
+		WHERE movieId=(
+			SELECT movieId FROM room${roomNumb}Seatset1
+			WHERE scheduleNumb=#{scheduleNumb}
+		)
+	</select>
+	
+	 <insert id="addAdorder">
+	 	INSERT INTO cinema_adorders
+	 	(customNumb,scheduleNumb,ticketAmount,totalValue,seat)
+	 	VALUES
+	 	(#{customNumb},#{scheduleNumb},#{ticketAmount},#{totalValue},#{seat})
+	 </insert>
+	 
+	 <update id="modifySeatset1" parameterType="map">
+	 	UPDATE room${roomNumb}Seatset1
+	 	SET (
+	 		beOrder=beOrder+#{ticketAmount}
+	 		<foreach collection="list" open=",seat" item="seat" >
+	 			#{seat}=#{flag}
+	 		</foreach>
+	 	)
+	 	WHERE scheduleNumb=#{scheduleNumb}
+	 </update>
+
+	 <update id="modifySeatset2" parameterType="map">
+	 	UPDATE room${roomNumb}Seatset2
+	 	SET (
+	 		<foreach collection="list" open=",seat" item="seat" >
+	 			#{seat}=#{flag}
+	 		</foreach>
+	 	)
+	 	WHERE scheduleNumb=#{scheduleNumb}
+	 </update>
+	 
+	 <select id="getIsFill">
+	 	SELECT isFilled FROM room${roomNumb}Schedule
+	 	WHERE scheduleNumb=#{scheduleNumb}
+	 </select>
+	 
+	 <select id="getBeOrder" parameterType="map">
+	 	SELECT beOrder FROM room${roomNumb}Schedule
+	 	WHERE scheduleNumb=#{scheduleNumb}
+	 </select>
+	 
+	 <select id="getTypeNumb">
+	 	SELECT typeNumb FROM projectroom_count
+	 	WHERE roomNumb=#{roomNumb}
+	 </select>
+	 
+	 <select id="getSeatAmount">
+	 	SELECT seatAmount FROM projectroomtype
+	 	WHERE typeNumb=#{typeNumb}
+	 </select>
+	 
+	 <update id="setIsFill">
+	 	UPDATE room${roomNumb}Schedule
+	 	SET isFilled=#{value}
+	 	WHERE scheduleNumb=#{scheduleNumb}
+	 </update>
+	 
+	 <update id="finishAdorder">
+	 	UPDATE cinema_adorders
+	 	SET isDealed=1
+	 	WHERE adOrderNumb=#{adOrderNumb}
+	 </update>
+	 
+	 <delete id="deleteAdorder">
+	 	DELETE FROM cinema_adorders
+	 	WHERE adOrderNumb=#{adOrderNumb}
+	 </delete>
+	 
+	 <select id="getAdorders" resultType="Adorder">
+	 	SELECT * FROM cinema_adorders
+	 	WHERE customNumb=#{customNumb}
+	 </select>
+	 
+	 <insert id="addOrder">
+	 	INSERT INTO cinema_orders
+	 	(customNumb,roomNumb,scheduleNumb,seat,ticketAmount,totalValue)
+	 	VALUES
+	 	(#{customNumb},#{roomNumb},#{scheduleNumb},#{seat},#{ticketAmount},#{totalValue})
+	 </insert>
+	 
+	 <select id="getOrders" resultType="Order">
+	 	SELECT * FROM cinema_orders
+	 	WHERE customNumb=#{customNumb}
+	 </select>
+	 
+	 <update id="setDeal">
+	 	UPDATE cinema_orders
+	 	SET isDealed=1
+	 	WHERE orderNumb=#{orderNumb}
+	 </update>
+	 
+	 <insert id="addCiComm">
+	 	INSERT INTO cinema_comments
+	 	(orderNumb, content)
+	 	VALUES
+	 	(#{orderNumb}，#{content})
+	 </insert>
+	 
+	 <select id="getMyComment" resultType="Comment">
+	 	SELECT *FROM cinema_comments
+	 	WHERE orderNumb IN{
+	 		<foreach collection="list" separator="," item="orderNumb">
+	 			#{orderNumb}
+	 		</foreach>
+	 	}
+	 </select>
+	 
+	 <update id="modifyMyCiComm">
+	 	UPDATE cinema_comments
+	 	SET content=#{content}
+	 	WHERE commentNumb=#{commentNumb}
+	 </update>
+	 
+	 <select id="getComment" resultType="Comment">
+	 	SELECT *FROM cinema_comments
+	 </select>
+</mapper>

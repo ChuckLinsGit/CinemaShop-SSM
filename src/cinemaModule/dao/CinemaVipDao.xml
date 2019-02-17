@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper>
+	<sql id="creatProc">
+		CREATE PROCEDURE vipLevel_patchSet (IN catarogy INT)
+		BEGIN
+			DECLARE i INT;
+			SET i=0;
+			WHILE i<= catarogy  DO
+			INSERT INTO viplevels
+			(VIPLevel) VALUES (i);
+			SET i=i+1;
+		END WHILE;
+		END
+	</sql>
+	
+	<sql id="addVipLevel">
+		CALL vipLevel_patchSet (#{levelCatalogy})
+	</sql>
+	
+	<update id="modifyLevelSet">
+		UPDATE vipLevel_patchSet
+		SET discount=#{discount}
+		WHERE viplevel=#{viplevel}
+	</update>
+	
+	<update id="changeCustomLevel">
+		UPDATE customerinformation
+		SET viplevel=#{viplevel}
+		WHERE customNumb=#{customNumb}
+	</update>
+</mapper>
